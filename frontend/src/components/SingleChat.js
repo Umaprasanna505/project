@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import "./Styles.css";
-import { getSender, getSenderFull } from "../confic/ChatLogics";
+import { getSender, getSenderFull } from "../config/ChatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProfileModal from "./miscellaneous/ProfileModal";
@@ -19,8 +19,10 @@ import animationData from "../animation/typing.json";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
+import { BASE_URL } from "../config/api";
 
-const ENDPOINT = "http://localhost:5000";
+const ENDPOINT = BASE_URL;
+
 var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
@@ -48,7 +50,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             };
 
             const { data } = await axios.get(
-                `/api/message/${selectedChat._id}`,
+                `${BASE_URL}/api/message/${selectedChat._id}`,
                 config
             );
 
@@ -81,19 +83,20 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     },
                 };
 
+                const messageToSend = newMessage;
                 setNewMessage("");
 
                 const { data } = await axios.post(
-                    "/api/message",
+                    `${BASE_URL}/api/message`,
                     {
-                        content: newMessage,
+                        content: messageToSend,
                         chatId: selectedChat._id,
                     },
                     config
                 );
 
                 socket.emit("new message", data);
-                setMessages([...messages, data]);
+                setMessages((prev) => [...prev, data]);
             } catch {
                 toast({
                     title: "Error Occurred!",
@@ -115,7 +118,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         socket.on("connected", () => setSocketConnected(true));
         socket.on("typing", () => setIsTyping(true));
         socket.on("stop typing", () => setIsTyping(false));
-    }, []);
+    }, [user]);
 
     // ✅ LOAD MESSAGES
     useEffect(() => {
@@ -135,7 +138,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                     setFetchAgain(!fetchAgain);
                 }
             } else {
-                setMessages([...messages, newMessageRecieved]);
+                setMessages((prev) => [...prev, newMessageRecieved]);
             }
         });
     });

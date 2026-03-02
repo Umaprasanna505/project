@@ -28,9 +28,10 @@ import axios from "axios";
 
 import ChatLoading from "../ChatLoading";
 import ProfileModal from "./ProfileModal";
-import { getSender } from "../../confic/ChatLogics";
+import { getSender } from "../../config/ChatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../Context/ChatProvider";
+import { BASE_URL } from "../../config/api";
 
 function SideDrawer() {
     const [search, setSearch] = useState("");
@@ -51,13 +52,11 @@ function SideDrawer() {
     const navigate = useNavigate();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    // ✅ Logout
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
         navigate("/");
     };
 
-    // ✅ Search users
     const handleSearch = async () => {
         if (!search) {
             toast({
@@ -76,7 +75,10 @@ function SideDrawer() {
                 headers: { Authorization: `Bearer ${user.token}` },
             };
 
-            const { data } = await axios.get(`/api/user?search=${search}`, config);
+            const { data } = await axios.get(
+                `${BASE_URL}/api/user?search=${search}`,
+                config
+            );
 
             setSearchResult(data);
             setLoading(false);
@@ -89,7 +91,6 @@ function SideDrawer() {
         }
     };
 
-    // ✅ Open chat
     const accessChat = async (userId) => {
         try {
             setLoadingChat(true);
@@ -101,7 +102,11 @@ function SideDrawer() {
                 },
             };
 
-            const { data } = await axios.post(`/api/chat`, { userId }, config);
+            const { data } = await axios.post(
+                `${BASE_URL}/api/chat`,
+                { userId },
+                config
+            );
 
             if (!chats.find((c) => c._id === data._id)) {
                 setChats([data, ...chats]);
@@ -121,7 +126,7 @@ function SideDrawer() {
 
     return (
         <>
-            {/* Top Navbar */}
+            {/* NAVBAR */}
             <Box
                 display="flex"
                 justifyContent="space-between"
@@ -176,7 +181,10 @@ function SideDrawer() {
                                 >
                                     {notif.chat.isGroupChat
                                         ? `New message in ${notif.chat.chatName}`
-                                        : `New message from ${getSender(user, notif.chat.users)}`}
+                                        : `New message from ${getSender(
+                                            user,
+                                            notif.chat.users
+                                        )}`}
                                 </MenuItem>
                             ))}
                         </MenuList>
@@ -200,7 +208,7 @@ function SideDrawer() {
                 </Box>
             </Box>
 
-            {/* Drawer */}
+            {/* DRAWER */}
             <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
                 <DrawerOverlay />
                 <DrawerContent>

@@ -12,6 +12,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ChatState } from "../../Context/ChatProvider";
+import { BASE_URL } from "../../config/api";
 
 const Login = () => {
     const [show, setShow] = useState(false);
@@ -19,7 +20,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const toast = useToast();   // ✅ v2 toast
+    const toast = useToast();
     const navigate = useNavigate();
     const { setUser } = ChatState();
 
@@ -41,10 +42,10 @@ const Login = () => {
         }
 
         try {
-            const { data } = await axios.post("/api/user/login", {
-                email,
-                password,
-            });
+            const { data } = await axios.post(
+                `${BASE_URL}/api/user/login`,
+                { email, password }
+            );
 
             toast({
                 title: "Success",
@@ -75,7 +76,6 @@ const Login = () => {
     return (
         <VStack spacing="12px">
 
-            {/* Email */}
             <FormControl isRequired>
                 <FormLabel>Email Address</FormLabel>
                 <Input
@@ -86,7 +86,6 @@ const Login = () => {
                 />
             </FormControl>
 
-            {/* Password */}
             <FormControl isRequired>
                 <FormLabel>Password</FormLabel>
                 <Box display="flex" gap="8px">

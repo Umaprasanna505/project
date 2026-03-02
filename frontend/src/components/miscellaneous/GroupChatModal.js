@@ -19,10 +19,10 @@ import { useState } from "react";
 import { ChatState } from "../../Context/ChatProvider";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
+import { BASE_URL } from "../../config/api";
 
 const GroupChatModal = ({ children }) => {
-    const toast = useToast(); // ✅ correct
-
+    const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const [groupChatName, setGroupChatName] = useState("");
@@ -60,7 +60,10 @@ const GroupChatModal = ({ children }) => {
                 },
             };
 
-            const { data } = await axios.get(`/api/user?search=${query}`, config);
+            const { data } = await axios.get(
+                `${BASE_URL}/api/user?search=${query}`,
+                config
+            );
 
             setSearchResult(data);
             setLoading(false);
@@ -93,7 +96,7 @@ const GroupChatModal = ({ children }) => {
             };
 
             const { data } = await axios.post(
-                "/api/chat/group",
+                `${BASE_URL}/api/chat/group`,
                 {
                     name: groupChatName,
                     users: JSON.stringify(selectedUsers.map((u) => u._id)),

@@ -3,14 +3,14 @@ import { Box, Stack, Text, Button, useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-import { getSender } from "../confic/ChatLogics";
+import { getSender } from "../config/ChatLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { ChatState } from "../Context/ChatProvider";
+import { BASE_URL } from "../config/api";
 
 const MyChats = ({ fetchAgain }) => {
-    const toast = useToast(); // ✅ correct
-
+    const toast = useToast();
     const [loggedUser, setLoggedUser] = useState();
 
     const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
@@ -23,7 +23,7 @@ const MyChats = ({ fetchAgain }) => {
                 },
             };
 
-            const { data } = await axios.get("/api/chat", config);
+            const { data } = await axios.get(`${BASE_URL}/api/chat`, config);
             setChats(data);
         } catch (error) {
             toast({

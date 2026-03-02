@@ -11,10 +11,11 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../config/api";
 
 const Signup = () => {
     const navigate = useNavigate();
-    const toast = useToast(); // updated
+    const toast = useToast();
 
     const [show, setShow] = useState(false);
     const [name, setName] = useState("");
@@ -49,13 +50,19 @@ const Signup = () => {
 
         try {
             setLoading(true);
-            const { data } = await axios.post("/api/user", { name, email, password, pic });
+
+            const { data } = await axios.post(
+                `${BASE_URL}/api/user`,
+                { name, email, password, pic }
+            );
+
             toast({
                 description: "Registration successful",
                 status: "success",
                 duration: 5000,
                 isClosable: true,
             });
+
             localStorage.setItem("userInfo", JSON.stringify(data));
             navigate("/chats");
         } catch (error) {
@@ -66,11 +73,13 @@ const Signup = () => {
                 isClosable: true,
             });
         }
+
         setLoading(false);
     };
 
     const postDetails = (file) => {
         if (!file) return;
+
         const data = new FormData();
         data.append("file", file);
         data.append("upload_preset", "chat-app");
@@ -121,10 +130,19 @@ const Signup = () => {
 
             <FormControl>
                 <FormLabel>Profile Picture</FormLabel>
-                <Input type="file" accept="image/*" onChange={(e) => postDetails(e.target.files[0])} />
+                <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => postDetails(e.target.files[0])}
+                />
             </FormControl>
 
-            <Button colorScheme="blue" width="100%" isLoading={loading} onClick={submitHandler}>
+            <Button
+                colorScheme="blue"
+                width="100%"
+                isLoading={loading}
+                onClick={submitHandler}
+            >
                 Sign Up
             </Button>
 
